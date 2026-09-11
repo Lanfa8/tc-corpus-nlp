@@ -150,14 +150,14 @@ def triage_training():
         return report
 
     @task
-    def export_onnx(staging_dir: str) -> str:
+    def export_onnx() -> str:
         """Exporta o pipeline de staging para ONNX."""
         result = subprocess.run(
             [
                 "python",
                 str(PROJECT_ROOT / "scripts" / "export_onnx.py"),
                 "--models-dir",
-                staging_dir,
+                str(STAGING_DIR),
             ],
             capture_output=True,
             text=True,
@@ -166,7 +166,7 @@ def triage_training():
         logger.info(result.stdout)
         if result.returncode != 0:
             raise RuntimeError(f"export para ONNX falhou:\n{result.stderr}")
-        return str(Path(staging_dir) / "pipeline.onnx")
+        return str(STAGING_DIR / "pipeline.onnx")
 
     @task
     def register_artifacts(staging_dir: str, report: dict) -> dict:
@@ -194,7 +194,7 @@ def triage_training():
 
     staging = train_model(data)
     report = evaluate_model(staging, data)
-    onnx = export_onnx(staging)
+    onnx = export_onnx()
     promoted = register_artifacts(staging, report)
     report >> onnx
     onnx >> promoted

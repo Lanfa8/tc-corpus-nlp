@@ -17,6 +17,8 @@ x-airflow-common: &airflow-common
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/dags:/opt/project/airflow/dags:ro
+    - ./tests:/opt/project/tests:ro
     - ./src:/opt/project/src
     - ./scripts:/opt/project/scripts
     - ./configs:/opt/project/configs
