@@ -58,11 +58,12 @@ make airflow-up
 make airflow-down
 ```
 
-O stack usa `AIRFLOW_UID` (default `50000`, o usuário embutido na imagem
-oficial do Airflow) para rodar os contêineres e ajustar a dono dos
-diretórios montados (`airflow/logs/`, `models/`) via `airflow-init`, que
-roda como `root` e faz `chown` neles antes de subir o scheduler/webserver —
-não é necessário nenhum ajuste manual de permissão no host. Se o seu UID
-local difere e você quiser que os arquivos fiquem com o seu usuário fora
-dos contêineres, rode `echo "AIRFLOW_UID=$(id -u)" >> .env` antes de
-`make airflow-up`.
+O stack roda os contêineres do Airflow com o UID do host (`AIRFLOW_UID`),
+não com o usuário embutido na imagem oficial — assim `models/` continua
+pertencendo ao seu usuário e permanece gravável tanto pelo host (`make
+train`) quanto pelos contêineres, sem precisar de `chown` na árvore
+inteira. `make airflow-up` grava `AIRFLOW_UID=$(id -u)` em `.env`
+automaticamente na primeira execução, se a variável ainda não estiver lá.
+`airflow-init` roda como `root` só para criar e ajustar o dono de
+`airflow/logs/` e de `models/staging/` (criado pela própria DAG), nunca da
+árvore `models/` inteira.

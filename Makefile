@@ -40,6 +40,8 @@ down:
 	docker compose down -v
 
 airflow-up:
+	@touch .env
+	@grep -q '^AIRFLOW_UID=' .env || echo "AIRFLOW_UID=$$(id -u)" >> .env
 	docker compose -f docker-compose.airflow.yml up -d
 
 airflow-down:

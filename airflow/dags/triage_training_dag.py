@@ -196,6 +196,7 @@ def triage_training():
     report = evaluate_model(staging, data)
     onnx = export_onnx(staging)
     promoted = register_artifacts(staging, report)
+    report >> onnx
     onnx >> promoted
 
 

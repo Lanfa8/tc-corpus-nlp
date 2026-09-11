@@ -47,8 +47,8 @@ services:
     command:
       - -c
       - |
-        mkdir -p /opt/airflow/logs /opt/project/models
-        chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/logs /opt/project/models
+        mkdir -p /opt/airflow/logs /opt/project/models/staging
+        chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/logs /opt/project/models/staging
         airflow db migrate
         airflow users create --username admin --password admin \
           --firstname Admin --lastname User --role Admin --email admin@example.com \
