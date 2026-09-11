@@ -90,8 +90,9 @@ Medido nesta máquina, `make benchmark`, execução de
 | onnx | 12.85 | 15.11 | 27.14 | 13.00 | 2 462 |
 | **speedup (p50)** | **0.53x (ONNX mais lento)** | 0.57x | 0.34x | 0.54x | 0.54x |
 
-Os números de `p50_ms`/`p95_ms`/`p99_ms`/`mean_ms`/`throughput_rps` e os
-tamanhos de artefato vêm literalmente de `docs/latency_results.json`; execuções
+Os números de `p50_ms`/`p95_ms`/`p99_ms`/`mean_ms`/`throughput_rps` vêm
+diretamente de `docs/latency_results.json`; os tamanhos de artefato citados
+(MB) são a conversão dos bytes armazenados nesse mesmo arquivo. Execuções
 repetidas do benchmark nesta máquina reproduzem o mesmo padrão qualitativo
 (ganho de ~3x no single, perda no batch de 32) com variação de poucos
 décimos de milissegundo entre rodadas.

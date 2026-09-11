@@ -53,11 +53,10 @@ from skl2onnx import to_onnx
 from skl2onnx.common.data_types import StringTensorType
 
 from triage.config.settings import get_settings
+from triage.inference.onnx_predictor import ONNX_FILE
 from triage.models.artifacts import load_pipeline
 
 logger = logging.getLogger(__name__)
-
-ONNX_FILE = "pipeline.onnx"
 
 
 def _register_sublinear_tf_fix() -> None:

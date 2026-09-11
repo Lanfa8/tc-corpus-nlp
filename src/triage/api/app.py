@@ -87,7 +87,9 @@ def create_app() -> FastAPI:
             backend=predictor.backend,
             model_name=metadata.get("model_name"),
             trained_at=metadata.get("trained_at"),
-            macro_f1=metadata.get("holdout", {}).get("macro_f1"),
+            macro_f1=(metadata.get("holdout") or metadata.get("validation") or {}).get(
+                "macro_f1"
+            ),
         )
 
     @app.post("/predict", response_model=PredictionResponse, tags=["triagem"])

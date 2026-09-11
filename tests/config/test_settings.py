@@ -7,7 +7,7 @@ def test_defaults():
     settings = Settings()
     assert settings.data_dir == Path("data")
     assert settings.models_dir == Path("models")
-    assert settings.backend == "sklearn"
+    assert settings.backend == "onnx"
 
 
 def test_env_prefix_overrides(monkeypatch):

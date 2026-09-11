@@ -145,7 +145,10 @@ def triage_training():
                 "modelo não promovido"
             )
 
-        metadata["holdout"] = report
+        # métricas de validação (split de 20% separado do treino), não
+        # held-out de teste — armazenadas sob uma chave distinta para não
+        # serem confundidas com o held-out reportado em scripts/train.py.
+        metadata["validation"] = report
         save_pipeline(pipeline, metadata, Path(staging_dir))
         logger.info("gate aprovado: macro_f1=%.4f", report["macro_f1"])
         return report

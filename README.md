@@ -99,6 +99,11 @@ make export-onnx      # gera models/pipeline.onnx a partir do pipeline treinado
 make up                # sobe API + Prometheus + Grafana (docker compose)
 ```
 
+O serviço usa o backend `onnx` por padrão, então `make export-onnx` (acima)
+precisa ter rodado antes de `make up` — sem `models/pipeline.onnx` a API
+sobe em modo degradado. Para comparar com o backend original, use
+`TRIAGE_BACKEND=sklearn make up`.
+
 | Serviço | URL | Credenciais |
 |---|---|---|
 | API (Swagger UI) | http://localhost:8000/docs | — |
@@ -111,7 +116,7 @@ make down               # derruba o compose
 ```
 
 O backend de inferência é escolhido pela variável `TRIAGE_BACKEND`
-(`sklearn` ou `onnx`, padrão `sklearn` — ver `docker-compose.yml` e
+(`sklearn` ou `onnx`, padrão `onnx` — ver `docker-compose.yml` e
 `docs/latency_report.md` para a comparação entre os dois).
 
 ### Orquestração de treino (Airflow)
@@ -164,16 +169,11 @@ de confusão e discussão de limitações em
 
 ### Dashboard Grafana
 
-![Dashboard Grafana](docs/img/grafana-dashboard.png)
-
-> A captura de tela acima precisa ser gerada manualmente neste ambiente
-> (`make up` → `make load-test` → abrir `http://localhost:3000` e
-> exportar/printar o dashboard "Triagem de Laudos — Visão Geral" com
-> tráfego real passando pelos 5 painéis). O renderizador headless usado
-> durante o desenvolvimento não conseguiu gerar essa imagem automaticamente,
-> e nenhuma captura foi fabricada em seu lugar — o arquivo
-> `docs/img/grafana-dashboard.png` só existirá neste caminho depois desse
-> passo manual.
+Para reproduzir o dashboard localmente: `make up` → `make load-test` →
+abrir `http://localhost:3000` (`admin`/`admin`, pasta **Triagem**) com
+tráfego real passando pelos 5 painéis. Uma captura desse dashboard pode ser
+salva em `docs/img/grafana-dashboard.png` e referenciada aqui com
+`![Dashboard Grafana](docs/img/grafana-dashboard.png)`.
 
 ## Estrutura do projeto
 

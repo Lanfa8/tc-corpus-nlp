@@ -99,8 +99,10 @@ def main() -> None:
     batch = sample[: args.batch_size]
 
     results = {"single": [], "batch": [], "artifact_bytes": {}}
+    predictors = {}
     for backend in ("sklearn", "onnx"):
         predictor = load_predictor(backend, settings.models_dir)
+        predictors[backend] = predictor
         results["single"].append(benchmark(predictor, single, n_runs=args.runs))
         results["batch"].append(
             benchmark(predictor, batch, n_runs=max(args.runs // 5, 20))
@@ -115,8 +117,8 @@ def main() -> None:
 
     # Paridade entre backends sobre o conjunto de teste COMPLETO — a
     # otimização não pode mudar o modelo. (amendment A: full set, not [:500])
-    sklearn_predictor = load_predictor("sklearn", settings.models_dir)
-    onnx_predictor = load_predictor("onnx", settings.models_dir)
+    sklearn_predictor = predictors["sklearn"]
+    onnx_predictor = predictors["onnx"]
     parity = compare_parity(sklearn_predictor, onnx_predictor, sample)
     results["parity"] = parity
     # Mantido por compatibilidade com consumidores que leem `agreement` no

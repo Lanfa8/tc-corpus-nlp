@@ -67,13 +67,14 @@ confirma que essa escolha também é competitiva em qualidade:
 
 | Modelo | macro-F1 (validação) | acurácia (validação) |
 |---|---|---|
-| logistic_regression | 0.6847 | — |
-| linear_svc | 0.6843 | — |
-| naive_bayes | 0.4043 | — |
-| dummy (baseline trivial) | 0.0978 | — |
+| logistic_regression | 0.6847 | 0.6866 |
+| linear_svc | 0.6843 | 0.6940 |
+| naive_bayes | 0.4043 | 0.5670 |
+| dummy (baseline trivial) | 0.0978 | 0.3235 |
 
 `logistic_regression` e `linear_svc` (SVM linear calibrado) empatam
-tecnicamente (diferença de macro-F1 de 0.0004); `logistic_regression` foi
+tecnicamente em macro-F1 (diferença de 0.0004), embora `linear_svc` tenha
+acurácia ligeiramente maior (0.6940 vs. 0.6866); `logistic_regression` foi
 escolhido por ser o mais simples dos dois modelos competitivos — sem a
 camada extra de calibração (`CalibratedClassifierCV`) que `linear_svc`
 precisa só para expor `predict_proba`.

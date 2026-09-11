@@ -36,7 +36,10 @@ class Predictor(Protocol):
 def build_predictions(probability_matrix: np.ndarray) -> list[Prediction]:
     """Converte a matriz (n_amostras, 5) de probabilidades em Predictions.
 
-    As colunas seguem a ordem de `LABELS` — os dois backends garantem isso.
+    As colunas seguem a ordem de `LABELS`. `SklearnPredictor._reorder` impõe
+    essa ordem ativamente; o backend ONNX não a reordena — ele apenas herda
+    a ordem de `clf.classes_` no momento da conversão para ONNX, que já
+    coincide com `LABELS` hoje, mas não é reforçada em tempo de inferência.
     """
     predictions = []
     for row in np.asarray(probability_matrix, dtype=float):

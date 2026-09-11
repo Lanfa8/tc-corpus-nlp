@@ -32,10 +32,11 @@ Tarefa, Ação, Resultado), com marcações de tempo aproximadas.
 
 ```bash
 make up                 # já deve estar rodando — não precisa repetir ao vivo
+                         # (backend padrão onnx; requer make export-onnx antes)
 make load-test          # gera tráfego contra a API, com o Grafana aberto ao lado
 # no Airflow: disparar (trigger) a DAG triage_training manualmente pela UI
-# TRIAGE_BACKEND=sklearn -> onnx: editar docker-compose.yml ou re-rodar
-# `docker compose up -d --build` com a variável trocada, observando o
+# TRIAGE_BACKEND=onnx -> sklearn: `TRIAGE_BACKEND=sklearn docker compose up
+# -d --build` para comparar com o backend não otimizado, observando o
 # painel de latência por backend no Grafana antes e depois
 ```
 
@@ -76,8 +77,8 @@ make load-test          # gera tráfego contra a API, com o Grafana aberto ao la
    disparar uma execução manual e acompanhar as tasks
    (`validate_data → load_data → train_model → evaluate_model →
    export_onnx → register_artifacts`) até o sucesso.
-7. Trocar `TRIAGE_BACKEND=sklearn` → `onnx` no serviço e mostrar, no painel
-   de latência por backend do Grafana, a mudança refletida.
+7. Trocar `TRIAGE_BACKEND=onnx` (padrão) → `sklearn` no serviço e mostrar,
+   no painel de latência por backend do Grafana, a mudança refletida.
 
 ## Resultado (3:30–5:00)
 

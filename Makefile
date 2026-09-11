@@ -5,12 +5,12 @@ install:
 	poetry install
 
 lint:
-	poetry run ruff check src tests scripts
-	poetry run ruff format --check src tests scripts
+	poetry run ruff check src tests scripts airflow
+	poetry run ruff format --check src tests scripts airflow
 
 lint-fix:
-	poetry run ruff check --fix src tests scripts
-	poetry run ruff format src tests scripts
+	poetry run ruff check --fix src tests scripts airflow
+	poetry run ruff format src tests scripts airflow
 
 test:
 	poetry run pytest tests --cov=src/triage --cov-report=term-missing

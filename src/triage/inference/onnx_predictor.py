@@ -42,7 +42,9 @@ def _probabilities_output_name(session: ort.InferenceSession) -> str:
     if by_name is not None:
         return by_name.name
 
-    candidates = [o for o in outputs if len(o.shape) == 2 and o.shape[-1] == 5]
+    candidates = [
+        o for o in outputs if len(o.shape) == 2 and o.shape[-1] == EXPECTED_N_CLASSES
+    ]
     if len(candidates) != 1:
         raise ValueError(
             "não foi possível identificar a saída de probabilidades do grafo "

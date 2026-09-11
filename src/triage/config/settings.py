@@ -16,8 +16,7 @@ class Settings(BaseSettings):
 
     data_dir: Path = Path("data")
     models_dir: Path = Path("models")
-    backend: Literal["sklearn", "onnx"] = "sklearn"
-    model_name: str = "logistic_regression"
+    backend: Literal["sklearn", "onnx"] = "onnx"
     log_level: str = "INFO"
 
 

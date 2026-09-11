@@ -54,6 +54,11 @@ def test_model_info_exposes_metadata(client):
     assert body["macro_f1"] == 0.99
 
 
+def test_model_info_falls_back_to_validation_metadata(client_with_validation_metadata):
+    body = client_with_validation_metadata.get("/model/info").json()
+    assert body["macro_f1"] == 0.68
+
+
 def test_degraded_mode_starts_without_artifacts(degraded_client):
     body = degraded_client.get("/health").json()
     assert body["status"] == "degraded"
