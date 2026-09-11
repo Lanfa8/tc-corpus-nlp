@@ -1,5 +1,5 @@
 .PHONY: install lint lint-fix test train export-onnx benchmark run-api \
-        docker-build docker-run up down airflow-up airflow-down
+        docker-build docker-run up down airflow-up airflow-down load-test
 
 install:
 	poetry install
@@ -46,3 +46,6 @@ airflow-up:
 
 airflow-down:
 	docker compose -f docker-compose.airflow.yml down -v
+
+load-test:
+	poetry run python scripts/generate_load.py --requests 500
