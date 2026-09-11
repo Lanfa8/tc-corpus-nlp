@@ -18,6 +18,40 @@ from triage.models.artifacts import METADATA_FILE
 logger = logging.getLogger(__name__)
 
 ONNX_FILE = "pipeline.onnx"
+EXPECTED_OUTPUT_NAME = "probabilities"
+EXPECTED_N_CLASSES = 5
+
+
+def _probabilities_output_name(session: ort.InferenceSession) -> str:
+    """Localiza a saída de probabilidades do grafo, sem confiar em posição.
+
+    O grafo exportado (`zipmap=False`) tem duas saídas: `label` (rótulo) e
+    `probabilities` (matriz `(n, 5)`). Ler `get_outputs()[1]` por posição, sem
+    validar nada, faria uma reordenação futura do conversor (ou uma troca de
+    versão do skl2onnx) alimentar rótulos inteiros como se fossem
+    probabilidades, silenciosamente. Aceita a saída cujo nome seja o esperado
+    ou, na ausência dele, a única saída 2-D de 5 colunas.
+    """
+    outputs = session.get_outputs()
+    if len(outputs) != 2:
+        raise ValueError(
+            f"grafo ONNX inesperado: esperadas 2 saídas, encontradas {len(outputs)}"
+        )
+
+    by_name = next((o for o in outputs if o.name == EXPECTED_OUTPUT_NAME), None)
+    if by_name is not None:
+        return by_name.name
+
+    candidates = [o for o in outputs if len(o.shape) == 2 and o.shape[-1] == 5]
+    if len(candidates) != 1:
+        raise ValueError(
+            "não foi possível identificar a saída de probabilidades do grafo "
+            f"ONNX: nenhuma saída chamada {EXPECTED_OUTPUT_NAME!r} e "
+            f"{len(candidates)} saída(s) 2-D com {EXPECTED_N_CLASSES} colunas "
+            f"(esperada exatamente 1); saídas disponíveis: "
+            f"{[(o.name, o.shape) for o in outputs]}"
+        )
+    return candidates[0].name
 
 
 class OnnxPredictor:
@@ -29,7 +63,7 @@ class OnnxPredictor:
         self._session = session
         self._input_name = session.get_inputs()[0].name
         # A segunda saída do grafo é a matriz de probabilidades (zipmap desativado).
-        self._output_name = session.get_outputs()[1].name
+        self._output_name = _probabilities_output_name(session)
         self.metadata = metadata
 
     @classmethod

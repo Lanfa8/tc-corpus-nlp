@@ -1,13 +1,29 @@
 import subprocess
 import sys
+from dataclasses import dataclass
 
 import pytest
 
 from triage.inference import load_predictor
-from triage.inference.onnx_predictor import OnnxPredictor
+from triage.inference.onnx_predictor import OnnxPredictor, _probabilities_output_name
 from triage.inference.predictor import SklearnPredictor
 from triage.models.artifacts import save_pipeline
 from triage.models.factory import build_pipeline
+
+
+@dataclass
+class _FakeOutput:
+    name: str
+    shape: list
+
+
+class _FakeSession:
+    def __init__(self, outputs: list[_FakeOutput]) -> None:
+        self._outputs = outputs
+
+    def get_outputs(self) -> list[_FakeOutput]:
+        return self._outputs
+
 
 SAMPLE_TEXTS = [
     "tumor malignant carcinoma metastasis oncology growth",
@@ -35,6 +51,32 @@ def exported_dir(tmp_path, synthetic_frame):
     assert result.returncode == 0, result.stderr
     assert (tmp_path / "pipeline.onnx").exists()
     return tmp_path
+
+
+def test_probabilities_output_name_resolves_real_exported_graph(exported_dir):
+    onnx_predictor = OnnxPredictor.from_artifacts(exported_dir)
+    assert onnx_predictor._output_name == "probabilities"
+
+
+def test_probabilities_output_name_rejects_wrong_output_count():
+    session = _FakeSession([_FakeOutput("only_one", [None, 5])])
+    with pytest.raises(ValueError, match="2 saídas"):
+        _probabilities_output_name(session)
+
+
+def test_probabilities_output_name_rejects_unrecognizable_shapes():
+    session = _FakeSession(
+        [_FakeOutput("label", [None]), _FakeOutput("mystery", [None, 3])]
+    )
+    with pytest.raises(ValueError, match="não foi possível identificar"):
+        _probabilities_output_name(session)
+
+
+def test_probabilities_output_name_falls_back_to_shape_when_unnamed():
+    session = _FakeSession(
+        [_FakeOutput("label", [None]), _FakeOutput("output_1", [None, 5])]
+    )
+    assert _probabilities_output_name(session) == "output_1"
 
 
 def test_onnx_backend_name(exported_dir):
