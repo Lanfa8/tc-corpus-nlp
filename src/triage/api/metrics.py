@@ -86,7 +86,9 @@ def record_predictions(predictions: list[Prediction]) -> None:
 def _route_template(request: Request) -> str:
     """Usa o template da rota (não a URL concreta) para não explodir a cardinalidade."""
     route = request.scope.get("route")
-    return getattr(route, "path", request.url.path)
+    if route is None:
+        return "__not_found__"
+    return getattr(route, "path", "__not_found__")
 
 
 def install(app: FastAPI) -> None:
@@ -98,9 +100,20 @@ def install(app: FastAPI) -> None:
             return await call_next(request)
 
         started = time.perf_counter()
-        response = await call_next(request)
-        elapsed = time.perf_counter() - started
+        try:
+            response = await call_next(request)
+        except Exception:
+            elapsed = time.perf_counter() - started
+            endpoint = _route_template(request)
+            logger.exception(
+                "erro não tratado ao processar %s %s", request.method, endpoint
+            )
+            REQUESTS_TOTAL.labels(endpoint=endpoint, status="500").inc()
+            REQUEST_DURATION.labels(endpoint=endpoint).observe(elapsed)
+            ERRORS_TOTAL.labels(endpoint=endpoint, type="unhandled_exception").inc()
+            raise
 
+        elapsed = time.perf_counter() - started
         endpoint = _route_template(request)
         REQUESTS_TOTAL.labels(endpoint=endpoint, status=response.status_code).inc()
         REQUEST_DURATION.labels(endpoint=endpoint).observe(elapsed)
