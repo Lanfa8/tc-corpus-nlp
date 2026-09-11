@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 
+from triage.api import metrics
 from triage.api.schemas import (
     BatchPredictionResponse,
     BatchPredictRequest,
@@ -68,6 +69,8 @@ def create_app() -> FastAPI:
         response.headers["X-Process-Time-Ms"] = f"{elapsed_ms:.3f}"
         return response
 
+    metrics.install(app)
+
     @app.get("/health", response_model=HealthResponse, tags=["infra"])
     def health(request: Request) -> HealthResponse:
         loaded = request.app.state.predictor is not None
@@ -91,8 +94,10 @@ def create_app() -> FastAPI:
     def predict(
         payload: PredictRequest, predictor: Predictor = Depends(get_predictor)
     ) -> PredictionResponse:
-        prediction = predictor.predict([payload.text])[0]
-        return PredictionResponse.from_prediction(prediction)
+        with metrics.observe_inference(predictor.backend):
+            predictions = predictor.predict([payload.text])
+        metrics.record_predictions(predictions)
+        return PredictionResponse.from_prediction(predictions[0])
 
     @app.post(
         "/predict/batch", response_model=BatchPredictionResponse, tags=["triagem"]
@@ -100,7 +105,9 @@ def create_app() -> FastAPI:
     def predict_batch(
         payload: BatchPredictRequest, predictor: Predictor = Depends(get_predictor)
     ) -> BatchPredictionResponse:
-        predictions = predictor.predict(payload.texts)
+        with metrics.observe_inference(predictor.backend):
+            predictions = predictor.predict(payload.texts)
+        metrics.record_predictions(predictions)
         return BatchPredictionResponse(
             predictions=[PredictionResponse.from_prediction(p) for p in predictions]
         )
