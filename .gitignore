@@ -1,0 +1,43 @@
+# Artefatos de planejamento — nunca versionar
+docs/superpowers/
+.superpowers/
+
+# Dados
+data/*.csv
+data/raw/
+data/processed/
+
+# Modelos
+models/*
+!models/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+
+# Testes e caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Airflow
+airflow/logs/
+airflow/plugins/
+airflow/.env
+
+# Grafana
+grafana-data/
+
+# Ambiente
+.env
+.DS_Store
