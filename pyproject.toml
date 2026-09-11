@@ -40,3 +40,15 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short"
+filterwarnings = [
+    # Library-internal deprecation: starlette 0.46.2's testclient module
+    # references the anyio.abc.BlockingPortal alias at import time, which
+    # anyio 4.15's lazy-import shim flags as deprecated (anyio/_lazyimport.py),
+    # but attributes to the starlette.testclient frame via stacklevel. This
+    # fires the moment anything imports fastapi.testclient/starlette.testclient
+    # (tests/api does, to exercise lifespan via `with TestClient(...)`).
+    # No caller-side fix at fastapi's pinned starlette range (<0.47); narrowly
+    # scoped to this exact message/module so other DeprecationWarnings still
+    # fail loudly.
+    "ignore:The anyio\\.abc\\.BlockingPortal alias is deprecated.*:DeprecationWarning:starlette\\.testclient",
+]
