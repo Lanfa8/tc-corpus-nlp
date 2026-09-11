@@ -46,3 +46,23 @@ make docker-run
 
 O serviço fica disponível em `http://localhost:8000`, com `GET /health`
 para verificação de status.
+
+## Orquestração com Airflow
+
+O treino/retreino é orquestrado por uma DAG do Airflow (`triage_training`),
+em um stack `docker-compose.airflow.yml` separado do serviço de inferência.
+
+```bash
+mkdir -p airflow/logs
+make airflow-up
+make airflow-down
+```
+
+O stack usa `AIRFLOW_UID` (default `50000`, o usuário embutido na imagem
+oficial do Airflow) para rodar os contêineres e ajustar a dono dos
+diretórios montados (`airflow/logs/`, `models/`) via `airflow-init`, que
+roda como `root` e faz `chown` neles antes de subir o scheduler/webserver —
+não é necessário nenhum ajuste manual de permissão no host. Se o seu UID
+local difere e você quiser que os arquivos fiquem com o seu usuário fora
+dos contêineres, rode `echo "AIRFLOW_UID=$(id -u)" >> .env` antes de
+`make airflow-up`.
