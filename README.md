@@ -205,24 +205,3 @@ salva em `docs/img/grafana-dashboard.png` e referenciada aqui com
 │   └── urgency.py                        # heurística de urgência
 └── tests/                                # espelha a estrutura de src/triage
 ```
-
-## Etapas do Tech Challenge
-
-| Etapa do PDF | Entregável | Onde |
-|---|---|---|
-| 1 — API + Docker + baseline de latência | Serviço FastAPI, imagem Docker, medição de latência | `src/triage/api/`, `docker/Dockerfile` |
-| 1 — Decisão de arquitetura em nuvem | Recomendação real-time + ALB/ECS Fargate, com alternativas descartadas | `docs/deploy_architecture.md` + resumo acima |
-| 2 — GitHub Actions (lint + test) | Workflow com 3 jobs | `.github/workflows/ci.yml` |
-| 2 — DAG Airflow (carrega → treina → salva) | DAG de 6 tasks, com gate de macro-F1 | `airflow/dags/triage_training_dag.py` |
-| 3 — Instrumentação `prometheus_client` | 5 métricas (requisições, latência HTTP, latência de inferência, predições, erros) | `src/triage/api/metrics.py` |
-| 3 — Compose API + Prometheus + Grafana | Stack completo local | `docker-compose.yml` |
-| 3 — Dashboard com ≥3 painéis | 5 painéis provisionados | `dashboards/grafana/triage-dashboard.json` |
-| 4 — Treinar o classificador | Comparação de 4 candidatos, seleção de `logistic_regression` | `scripts/train.py`, `models/`, `docs/model_card.md` |
-| 4 — Otimização de latência (ONNX) | Exportação do pipeline completo para um grafo ONNX | `scripts/export_onnx.py`, `src/triage/inference/onnx_predictor.py` |
-| 4 — Comparativo de latência | Benchmark reprodutível + relatório | `scripts/benchmark_latency.py`, `docs/latency_report.md` |
-| 4 — Vídeo STAR | Roteiro e gravação | `docs/roteiro_video.md` |
-
-## Vídeo
-
-Link da gravação: _a preencher após a gravação, seguindo
-[`docs/roteiro_video.md`](docs/roteiro_video.md)_.
