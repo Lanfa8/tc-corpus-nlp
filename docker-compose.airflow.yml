@@ -50,11 +50,14 @@ services:
       - -c
       - |
         mkdir -p /opt/airflow/logs /opt/project/models/staging
-        chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/logs /opt/project/models/staging
         airflow db migrate
         airflow users create --username admin --password admin \
           --firstname Admin --lastname User --role Admin --email admin@example.com \
           || true
+        # chown por último: os comandos airflow acima rodam como root e criam
+        # subpastas em logs/ (ex.: logs/scheduler/<data>) que o scheduler,
+        # rodando como AIRFLOW_UID, precisa conseguir escrever.
+        chown -R "${AIRFLOW_UID:-50000}:0" /opt/airflow/logs /opt/project/models/staging
     restart: "no"
 
   airflow-webserver:

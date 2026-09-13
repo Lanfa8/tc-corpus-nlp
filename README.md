@@ -17,8 +17,7 @@ a chegada de um laudo e a decisão de quem atender primeiro.
 > (`normal`/`atencao`/`urgente`, ver `src/triage/urgency.py`) é uma
 > heurística de produto, não um rótulo clínico validado.** O sistema é uma
 > ferramenta de apoio à priorização e **não substitui a avaliação de um
-> profissional de saúde**. Ver `docs/model_card.md` para a discussão
-> completa de limitações e considerações éticas.
+> profissional de saúde**. Ver `docs/model_card.md` para as limitações.
 
 ## Dataset
 
@@ -69,8 +68,7 @@ A decisão de arquitetura em **nuvem** está documentada por completo em
 recomendação é servir o modelo em **tempo real** (não em lote), porque o
 valor clínico da triagem depende de responder no momento do atendimento —
 um pipeline batch entregaria a priorização depois que a decisão humana já
-foi tomada. A arquitetura proposta é **ALB → ECS Fargate** (2+ tasks,
-autoscaling por CPU e por latência do target group) para o serviço de
+foi tomada. A arquitetura proposta é **ALB → ECS Fargate** (2+ tasks) para o serviço de
 inferência, com artefatos versionados em **S3** e imagens no **ECR**;
 **MWAA** (ou Airflow em Fargate) executa o retreino e publica o novo
 artefato; **Amazon Managed Prometheus/Grafana** cobre a observabilidade.
@@ -163,8 +161,8 @@ diferença máxima de probabilidade de 2.813e-07 sobre o held-out completo).
 ### Qualidade do modelo
 
 Held-out (`medical_tc_test.csv`, 2.770 documentos após limpeza):
-**macro-F1 0.5900**, **acurácia 0.5874**. Detalhamento por classe, matriz
-de confusão e discussão de limitações em
+**macro-F1 0.5900**, **acurácia 0.5874**. Métricas por classe e
+limitações em
 [`docs/model_card.md`](docs/model_card.md).
 
 ### Dashboard Grafana
@@ -187,8 +185,7 @@ salva em `docs/img/grafana-dashboard.png` e referenciada aqui com
 │   ├── deploy_architecture.md            # decisão de arquitetura em nuvem
 │   ├── latency_report.md                 # comparação sklearn vs. ONNX
 │   ├── model_card.md                     # dados, métricas, limitações
-│   ├── latency_results.json              # saída bruta de `make benchmark`
-│   └── roteiro_video.md                  # roteiro STAR do vídeo
+│   └── latency_results.json              # saída bruta de `make benchmark`
 ├── notebooks/01_eda.ipynb                # EDA + comparação de modelos
 ├── scripts/
 │   ├── train.py                          # treino e comparação de candidatos
