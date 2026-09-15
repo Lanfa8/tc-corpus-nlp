@@ -169,9 +169,7 @@ limitações em
 
 Para reproduzir o dashboard localmente: `make up` → `make load-test` →
 abrir `http://localhost:3000` (`admin`/`admin`, pasta **Triagem**) com
-tráfego real passando pelos 5 painéis. Uma captura desse dashboard pode ser
-salva em `docs/img/grafana-dashboard.png` e referenciada aqui com
-`![Dashboard Grafana](docs/img/grafana-dashboard.png)`.
+tráfego real passando pelos 5 painéis.
 
 ## Estrutura do projeto
 
